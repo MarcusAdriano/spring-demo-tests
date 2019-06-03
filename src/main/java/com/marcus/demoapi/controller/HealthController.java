@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController()
 @RequestMapping("health")
-public class HealthController {
+public final class HealthController {
 
     @GetMapping(produces = "application/json; charset=utf-8")
     public Health health() {
