@@ -7,6 +7,7 @@ import rx.Observable;
 import rx.Single;
 
 import javax.validation.constraints.NotNull;
+import java.sql.Date;
 import java.util.*;
 
 @Service
@@ -25,11 +26,13 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public void _new(Todo todo) {
+    public Todo _new(Todo todo) {
         synchronized (TodoServiceImpl.class) {
             todo.setId(++lastId);
             mDatabase.put(todo.getId(), todo);
         }
+
+        return todo;
     }
 
     @Override
@@ -64,7 +67,10 @@ public class TodoServiceImpl implements TodoService {
     public Optional<Todo> update(@NotNull Todo todoToUpdate) {
         Optional<Todo> item = Optional.ofNullable(mDatabase.get(todoToUpdate.getId()));
         synchronized (TodoServiceImpl.class) {
-            item.ifPresent(todo -> mDatabase.put(todo.getId(), todo));
+            item.ifPresent(todo -> {
+                mDatabase.put(todo.getId(), todo);
+                todo.setUpdateAt(new Date(new java.util.Date().getTime()));
+            });
         }
         return item;
     }

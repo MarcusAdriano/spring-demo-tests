@@ -8,7 +8,7 @@ public interface TodoService {
 
     Iterable<Todo> findAll();
 
-    void _new(Todo todo);
+    Todo _new(Todo todo);
 
     Optional<Todo> get(long id);
 
