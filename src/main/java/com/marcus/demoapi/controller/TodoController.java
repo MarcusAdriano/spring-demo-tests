@@ -1,6 +1,7 @@
 package com.marcus.demoapi.controller;
 
-import com.marcus.demoapi.model.StringFilter;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marcus.demoapi.model.Todo;
 import com.marcus.demoapi.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,41 +11,58 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
-@RestController()
-@RequestMapping("todo")
+@RestController
 public final class TodoController {
 
     @Autowired
     private TodoService mService;
+    private static ObjectMapper mObjectMapper = new ObjectMapper();
 
-    @GetMapping(produces = "application/json; charset=utf-8")
-    public Iterable<Todo> getAll() {
-        return mService.findAll();
+    private static String serialized(Object obj) {
+        try {
+            return mObjectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        return "{}";
     }
 
-    @PostMapping(produces = "application/json; charset=utf-8")
-    public ResponseEntity newTodo(@RequestBody Todo request) {
-        Todo todo = mService._new(request);
+    @GetMapping(value = "/todo", produces = "application/json; charset=utf-8")
+    public ResponseEntity getAll() {
         return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(todo);
+                .ok(serialized(mService.findAll()));
     }
 
-    @PostMapping(produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
+    /*@PostMapping(produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
     public ResponseEntity getByFilter(@RequestBody StringFilter stringFilter) {
         Iterable<Todo> todos = mService.get(stringFilter.getFilter());
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(todos);
+                .body(serialized(todos));
+    }*/
+
+    @PostMapping(value = "/todo", produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
+    public ResponseEntity newTodo(@RequestBody Todo request) {
+        Optional<Todo> todo = mService._new(request);
+        if (todo.isPresent()) {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(serialized(todo.get()));
+        } else {
+            return ResponseEntity
+                    .badRequest()
+                    .build();
+        }
     }
 
-    @GetMapping(value = "/{id}", produces = "application/json; charset=utf-8")
+    @GetMapping(value = "/todo/{id}", produces = "application/json; charset=utf-8")
     public ResponseEntity getById(@PathVariable(name = "id") long id) {
         Optional<Todo> todo = mService.get(id);
         if (todo.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(todo.get());
+                    .body(serialized(todo.get()));
         } else {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -52,13 +70,13 @@ public final class TodoController {
         }
     }
 
-    @DeleteMapping(value = "/{id}", produces = "application/json; charset=utf-8")
+    @DeleteMapping(value = "/todo/{id}", produces = "application/json; charset=utf-8")
     public ResponseEntity deleteById(@PathVariable(name = "id") long id) {
         Optional<Todo> todo = mService.delete(id);
         if (todo.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(todo.get());
+                    .body(serialized(todo.get()));
         } else {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -66,13 +84,13 @@ public final class TodoController {
         }
     }
 
-    @PutMapping(produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
+    @PutMapping(value = "/todo", produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
     public ResponseEntity updateTodo(@RequestBody Todo request) {
         Optional<Todo> todo = mService.update(request);
         if (todo.isPresent()) {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(todo.get());
+                    .body(serialized(todo.get()));
         } else {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)

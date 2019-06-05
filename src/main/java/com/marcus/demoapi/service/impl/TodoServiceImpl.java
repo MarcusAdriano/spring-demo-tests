@@ -26,13 +26,21 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Todo _new(Todo todo) {
+    public Optional<Todo> _new(Todo todo) {
         synchronized (TodoServiceImpl.class) {
-            todo.setId(++lastId);
-            mDatabase.put(todo.getId(), todo);
+            if (todo.getId() == 0) {
+                todo.setId(++lastId);
+                mDatabase.put(todo.getId(), todo);
+            } else {
+                if (mDatabase.get(todo.getId()) == null) {
+                    mDatabase.put(todo.getId(), todo);
+                } else {
+                    return Optional.empty();
+                }
+            }
         }
 
-        return todo;
+        return Optional.of(todo);
     }
 
     @Override
@@ -58,7 +66,7 @@ public class TodoServiceImpl implements TodoService {
     public Optional<Todo> delete(long id) {
         Optional<Todo> item = Optional.ofNullable(mDatabase.get(id));
         synchronized (TodoServiceImpl.class) {
-            item.ifPresent(todo -> mDatabase.remove(todo));
+            item.ifPresent(todo -> mDatabase.remove(todo.getId()));
         }
         return item;
     }
