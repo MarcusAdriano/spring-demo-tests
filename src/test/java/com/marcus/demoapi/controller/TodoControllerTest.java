@@ -18,8 +18,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.Assert.fail;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -90,11 +90,17 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void getById() {
+    public void getById() throws Exception {
     }
 
     @Test
-    public void deleteById() {
+    public void deleteById() throws Exception {
+        if (currentTodo.isPresent()) {
+            mvc.perform(delete(String.format("/todo/%d", currentTodo.get().getId())))
+                    .andExpect(status().isOk());
+        } else {
+            fail();
+        }
     }
 
     @Test

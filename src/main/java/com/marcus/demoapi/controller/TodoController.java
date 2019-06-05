@@ -70,7 +70,7 @@ public final class TodoController {
         }
     }
 
-    @DeleteMapping(value = "/todo/{id}", produces = "application/json; charset=utf-8")
+    @DeleteMapping(value = "/todo/{id}")
     public ResponseEntity deleteById(@PathVariable(name = "id") long id) {
         Optional<Todo> todo = mService.delete(id);
         if (todo.isPresent()) {
