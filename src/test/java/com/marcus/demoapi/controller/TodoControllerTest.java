@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -53,7 +54,7 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void findAll() throws Exception {
+    public void getAll() throws Exception {
 
         String json = new ObjectMapper().writeValueAsString(mService.findAll());
 
@@ -64,7 +65,7 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void newTodo() throws Exception {
+    public void _newTodo() throws Exception {
         Todo t1 = new Todo();
         t1.setId(new Random().nextInt(1000) + 500);
         t1.setUpdateAt(null);
@@ -82,10 +83,6 @@ public class TodoControllerTest {
                 .andExpect(status().is(201))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(content().json(requestContent));
-    }
-
-    @Test
-    public void getByFilter() {
     }
 
     @Test
@@ -107,6 +104,28 @@ public class TodoControllerTest {
     }
 
     @Test
+    public void getByIdNotFound() throws Exception {
+        mvc.perform(get("/todo/" + 9999))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    public void deleteByIdNotFound() throws Exception {
+        mvc.perform(delete("/todo/" + 9999))
+                .andExpect(status().is(404));
+    }
+
+    @Test
+    public void updateNotFound() throws Exception {
+        Todo todo = new Todo();
+        String json = new ObjectMapper().writeValueAsString(todo);
+        mvc.perform(put("/todo")
+                .contentType("application/json; charset=utf-8")
+                .content(json))
+                .andExpect(status().is(404));
+    }
+
+    @Test
     public void deleteById() throws Exception {
         if (currentTodo.isPresent()) {
             mvc.perform(delete(String.format("/todo/%d", currentTodo.get().getId())))
@@ -114,6 +133,27 @@ public class TodoControllerTest {
         } else {
             fail();
         }
+    }
+
+    @Test
+    public void _newTodoBadRequest() throws Exception {
+        Todo t1 = new Todo();
+
+        currentTodo.ifPresent(todo -> t1.setId(todo.getId()));
+
+        t1.setUpdateAt(null);
+        t1.setCreateAt(new Date());
+        t1.setCompleteAt(new Date());
+        t1.setDescription("Apenas um teste");
+        t1.setComplete(true);
+
+        String requestContent = new ObjectMapper()
+                .writeValueAsString(t1);
+
+        mvc.perform(post("/todo")
+                .contentType("application/json; charset=utf-8")
+                .content(requestContent))
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()));
     }
 
     @Test
