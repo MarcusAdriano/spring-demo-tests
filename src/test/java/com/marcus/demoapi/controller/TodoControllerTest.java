@@ -20,8 +20,7 @@ import java.util.Random;
 
 import static org.junit.Assert.fail;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(TodoController.class)
@@ -37,7 +36,7 @@ public class TodoControllerTest {
     private Optional<Todo> currentTodo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Todo todo = new Todo();
         todo.setComplete(false);
         todo.setDescription("First todo!");
@@ -49,7 +48,7 @@ public class TodoControllerTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         currentTodo.ifPresent(todo -> mService.delete(todo.getId()));
     }
 
@@ -91,6 +90,20 @@ public class TodoControllerTest {
 
     @Test
     public void getById() throws Exception {
+        if (currentTodo.isPresent()) {
+            Todo todo = currentTodo.get();
+
+            String expectResponse = new ObjectMapper()
+                    .writeValueAsString(todo);
+
+            mvc.perform(get("/todo/" + todo.getId()))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(content().json(expectResponse));
+
+        } else {
+            fail();
+        }
     }
 
     @Test
@@ -104,6 +117,24 @@ public class TodoControllerTest {
     }
 
     @Test
-    public void updateTodo() {
+    public void updateTodo() throws Exception {
+        if (currentTodo.isPresent()) {
+
+            Todo todo = currentTodo.get();
+            todo.setComplete(true);
+            todo.setCompleteAt(new Date());
+
+            String request = new ObjectMapper().writeValueAsString(todo);
+
+            mvc.perform(put("/todo")
+                    .contentType("application/json; charset=utf-8")
+                    .content(request))
+                    .andExpect(status().isOk())
+                    .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8))
+                    .andExpect(jsonPath("$.complete").value(true))
+                    .andExpect(jsonPath("$.completeAt").value(todo.getCompleteAt().getTime()));
+        } else {
+            fail();
+        }
     }
 }

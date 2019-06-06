@@ -16,6 +16,7 @@ public final class TodoController {
 
     @Autowired
     private TodoService mService;
+
     private static ObjectMapper mObjectMapper = new ObjectMapper();
 
     private static String serialized(Object obj) {
@@ -33,14 +34,6 @@ public final class TodoController {
         return ResponseEntity
                 .ok(serialized(mService.findAll()));
     }
-
-    /*@PostMapping(produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
-    public ResponseEntity getByFilter(@RequestBody StringFilter stringFilter) {
-        Iterable<Todo> todos = mService.get(stringFilter.getFilter());
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(serialized(todos));
-    }*/
 
     @PostMapping(value = "/todo", produces = "application/json; charset=utf-8", consumes = "application/json; charset=utf-8")
     public ResponseEntity newTodo(@RequestBody Todo request) {

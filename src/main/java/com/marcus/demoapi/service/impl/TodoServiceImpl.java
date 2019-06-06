@@ -3,12 +3,12 @@ package com.marcus.demoapi.service.impl;
 import com.marcus.demoapi.model.Todo;
 import com.marcus.demoapi.service.TodoService;
 import org.springframework.stereotype.Service;
-import rx.Observable;
-import rx.Single;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TodoServiceImpl implements TodoService {
@@ -46,20 +46,6 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Optional<Todo> get(long id) {
         return Optional.ofNullable(mDatabase.get(id));
-    }
-
-    @Override
-    public Iterable<Todo> get(String description) {
-        List<Todo> todoList = new ArrayList<>(20);
-        Single<Todo> todoSingle =
-                Observable.from(mDatabase.values())
-                        .filter(item -> item.getDescription().contains(description))
-                        .toSingle();
-
-        todoSingle.subscribe(
-                todoList::add
-        );
-        return todoList;
     }
 
     @Override

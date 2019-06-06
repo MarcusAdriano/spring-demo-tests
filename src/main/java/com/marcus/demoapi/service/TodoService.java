@@ -12,8 +12,6 @@ public interface TodoService {
 
     Optional<Todo> get(long id);
 
-    Iterable<Todo> get(String description);
-
     Optional<Todo> delete(long id);
 
     Optional<Todo> update(Todo todo);
