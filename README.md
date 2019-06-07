@@ -20,7 +20,7 @@ public class Calculator {
 }
 ```
 
-Teste unitário corresponde:
+Teste unitário correspondente:
 ```java
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -40,8 +40,8 @@ do JUnit.
 
 ### TDD (Test driven development)
 
-TDD é o *Desenvolvimento orientado por testes*. Primeiro desenvolvem-se os testes
-inicialmente todos irão falhar (red) e após os testes escritos, desenvolvem-se as funcionalidades, até que os testes sejam positivos (green).
+TDD é o *Desenvolvimento orientado por testes*. Primeiro desenvolvem-se os testes, 
+inicialmente todos irão falhar (red) e após os testes escritos, desenvolvem-se as funcionalidades até que os testes sejam positivos (green).
 
 Ciclo de desenvolvimento TDD: 
 
@@ -53,8 +53,11 @@ Mais detalhes em [DevMedia](https://www.devmedia.com.br/test-driven-development-
 
 Ferramentas que possibilitam ao desenvolvedor vizualizar a cobertura dos testes, isto é, um conjunto de respostas para as
 seguintes perguntas: 
+
 * Quanto do meu código foi testado? 
 * Já testei tudo?
 * O que falta?
 
 Ambos juntos fornecem: [![codecov](https://codecov.io/gh/MarcusAdriano/spring-demo-tests/branch/master/graph/badge.svg)](https://codecov.io/gh/MarcusAdriano/spring-demo-tests)
+
+Informações adicionais: [JaCoCo](https://www.eclemma.org/jacoco/) e [Codecov](https://codecov.io)
