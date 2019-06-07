@@ -38,12 +38,7 @@ public class TodoControllerTest {
 
     @Before
     public void setUp() {
-        Todo todo = new Todo();
-        todo.setComplete(false);
-        todo.setDescription("First todo!");
-        todo.setCreateAt(new java.util.Date());
-        todo.setCompleteAt(null);
-        todo.setUpdateAt(null);
+        Todo todo = new Todo(null, new Date(), null, "First todo!", false);
 
         currentTodo = mService._new(todo);
     }
@@ -66,13 +61,14 @@ public class TodoControllerTest {
 
     @Test
     public void _newTodo() throws Exception {
-        Todo t1 = new Todo();
-        t1.setId(new Random().nextInt(1000) + 500);
-        t1.setUpdateAt(null);
-        t1.setCreateAt(new Date());
-        t1.setCompleteAt(new Date());
-        t1.setDescription("Apenas um teste");
-        t1.setComplete(true);
+        Todo t1 = new Todo(
+                new Date(),
+                new Date(),
+                null,
+                "Apenas um teste",
+                true,
+                new Random().nextInt(1000) + 500
+        );
 
         String requestContent = new ObjectMapper()
                 .writeValueAsString(t1);

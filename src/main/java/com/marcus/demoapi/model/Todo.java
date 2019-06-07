@@ -18,4 +18,11 @@ public class Todo {
     private boolean isComplete;
     private long id;
 
+    public Todo(Date completeAt, Date createAt, Date updateAt, String description, boolean isComplete) {
+        this.completeAt = completeAt;
+        this.createAt = createAt;
+        this.updateAt = updateAt;
+        this.description = description;
+        this.isComplete = isComplete;
+    }
 }
